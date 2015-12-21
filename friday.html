@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<title>Is it Friday?</title>
+<style>
+  h1 {
+    font-size: 20pt;
+    text-align: center;
+  }
+  p {
+    display: none;
+    position: absolute;
+    top: 50%;
+  	transform: translateY(-50%);
+    width: 99%;
+    text-align: center;
+    font-size: 60pt;
+    font-family: Impact, Charcoal, sans-serif;
+    margin-top: -30pt;
+    z-index: 2;
+  }
+  p span {
+    font-size: 30px;
+    font-family: "Lucida Console", Monaco, monospace;
+    font-weight: bold;
+  }
+  iframe {
+    position: absolute;
+    top: 50%;
+    margin-top: -157px;
+    left: 50%;
+    margin-left: -280px;
+    z-index: 1;
+  }
+  .partyTime {
+    background: url(http://49.media.tumblr.com/092a9919260ac2a23d1480e13f095b89/tumblr_nyd36beFiR1u2im2co1_400.gif) center center repeat;
+  }
+  .sadPanda {
+    background: url(https://media.giphy.com/media/Q3Ou3eFKMTFn2/giphy.gif) left bottom no-repeat fixed;
+    background-size: 80px 107px; /* 240x320 */
+  }
+</style>
+<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+  var fridayOffset = 16; //4pm EST
+  
+  var answer = [];
+  answer[0] = "Why are you here?!";
+  answer[1] = "You wish.";
+  answer[2] = "No!";
+  answer[3] = "No.";
+  answer[4] = "Almost";
+  answer[5] = "Yes!"; //Friday
+  answer[6] = "GO HOME";
+  
+  var partyHard = true;
+  
+  var maxVideos = 3;
+  var video = [];
+  video[0] = "5txNPRJZVeM";
+  video[1] = "u0IofkJW9f0";
+  video[2] = "ZZ5LpwO-An4";
+  
+  function friday() {
+    
+    // display answer
+    $("p").html(answer[today().getDay()]);
+    
+    // Early week
+    if (today().getDay() < 4) {
+      $("body").addClass("sadPanda"); // background
+    }
+    
+    // countdown to Friday
+    if (today().getDay() == 4) {
+      $("p").html(answer[today().getDay()] + "<br /><span>" + (23 - today().getHours()) + ":" + (59 - today().getMinutes()) + ":" + (59 - today().getSeconds()) + "</span>");
+      doOnce = false;
+    }
+    
+    // jazz it up for Friday
+    if (today().getDay() == 5) {
+      $("p").css("color", "#" + Math.floor(Math.random()*16777216).toString(16));
+      $("body").css("background-color", "#" + Math.floor(Math.random()*16777216).toString(16));
+      
+      // party hard on Friday
+      if (partyHard) {
+        $("body").addClass("partyTime"); // background
+        
+        // video
+        $("p").after('<iframe width="560" height="315" src="https://www.youtube.com/embed/' + video[Math.floor(Math.random()*maxVideos)] + '?rel=0&autoplay=1" frameborder="0" allowfullscreen></iframe>');          
+        
+        partyHard = false; // make changes only once
+      }
+    }
+  }
+  
+  // check time
+  function today () {
+    var date = new Date();
+    date.setHours(date.getHours() - fridayOffset);
+    return date;
+  }
+
+</script>
+</head>
+<body>
+  
+  <h1>Is it friday?</h1>
+  
+  <p></p>
+  
+  <script>
+  
+    setInterval(friday, 1000);
+
+    $("p").fadeIn(3000);
+    
+  </script>
+</body>
+</html>
