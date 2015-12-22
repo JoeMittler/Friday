@@ -3,7 +3,16 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>Is it Friday?</title>
+<script>
+  var fridayDay = 5; //Sunday = 0, Friday=5
+  var fridayOffset = 16; //4pm EST  
+</script>
 <style>
+  body {
+    background-color: #333;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+  }
   h1 {
     font-size: 20pt;
     text-align: center;
@@ -25,6 +34,14 @@
     font-family: "Lucida Console", Monaco, monospace;
     font-weight: bold;
   }
+  div {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1%;
+    background: #fff;
+  }
   iframe {
     position: absolute;
     top: 50%;
@@ -37,21 +54,31 @@
     background: url(http://49.media.tumblr.com/092a9919260ac2a23d1480e13f095b89/tumblr_nyd36beFiR1u2im2co1_400.gif) center center repeat;
   }
   .sadPanda {
-    background: url(https://media.giphy.com/media/Q3Ou3eFKMTFn2/giphy.gif) left bottom no-repeat fixed;
-    background-size: 80px 107px; /* 240x320 */
+    background-image: url(http://www.mpadeco.com/resize/800x800/zc/3/f/0/src/sites/mpadeco/files/products/7911.png); /*https://media.giphy.com/media/Q3Ou3eFKMTFn2/giphy.gif 80px 107px;  240x320 */
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 300px 288px; /* 700x672 */
   }
 </style>
 <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
-  var fridayOffset = 16; //4pm EST
+  var fridayName = [];
+  fridayName[0] = "Sunday";
+  fridayName[1] = "Monday";
+  fridayName[2] = "Tuesday";
+  fridayName[3] = "Wednesday";
+  fridayName[4] = "Thursday";
+  fridayName[5] = "Friday";
+  fridayName[6] = "Saturday";
   
   var answer = [];
-  answer[0] = "Why are you here?!";
-  answer[1] = "You wish.";
-  answer[2] = "No!";
-  answer[3] = "No.";
-  answer[4] = "Almost";
-  answer[5] = "Yes!"; //Friday
+  answer[0] = "Yes!"; //Friday 4pm
+  answer[1] = "Almost";
+  answer[2] = "No.";
+  answer[3] = "No!";
+  answer[4] = "You wish.";
+  answer[5] = "Keep dreaming.";
   answer[6] = "GO HOME";
   
   var partyHard = true;
@@ -62,24 +89,30 @@
   video[1] = "u0IofkJW9f0";
   video[2] = "ZZ5LpwO-An4";
   
-  function friday() {
+  var doOnce = true;
+  
+  function isItFriday() {
     
     // display answer
-    $("p").html(answer[today().getDay()]);
+    $("p").html(answer[numDays()]);
+    
+    // show progress bar
+    $("div").width(progress() + "%");
     
     // Early week
-    if (today().getDay() < 4) {
+    if (doOnce && numDays() > 1) {
       $("body").addClass("sadPanda"); // background
+      doOnce = false;
     }
     
     // countdown to Friday
-    if (today().getDay() == 4) {
-      $("p").html(answer[today().getDay()] + "<br /><span>" + (23 - today().getHours()) + ":" + (59 - today().getMinutes()) + ":" + (59 - today().getSeconds()) + "</span>");
+    if (numDays() == 1) {
+      $("p").html(answer[numDays()] + "<br /><span>" + zerofy(23 - today().getHours()) + ":" + zerofy(59 - today().getMinutes()) + ":" + zerofy(59 - today().getSeconds()) + "</span>");
       doOnce = false;
     }
     
     // jazz it up for Friday
-    if (today().getDay() == 5) {
+    if (numDays() == 0) {
       $("p").css("color", "#" + Math.floor(Math.random()*16777216).toString(16));
       $("body").css("background-color", "#" + Math.floor(Math.random()*16777216).toString(16));
       
@@ -101,18 +134,58 @@
     date.setHours(date.getHours() - fridayOffset);
     return date;
   }
+  
+  // "Friday" of current week
+  function friday () {
+    var date = today();
+    date.setDate(date.getDate() + numDays());
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
+  }
+  
+  // number of days to "Friday"
+  function numDays () {
+    var n = (fridayDay - today().getDay()) % 7;
+    if (n < 0) n += 7;
+    return n;
+  }
+  
+  // progress to Friday
+  function progress () {
+    if (numDays() < 1) {
+      return 0;
+    }
+    else {
+      var date = friday();
+      date.setDate(friday().getDate() - 6);
+      return Math.abs(Math.floor((today().getTime() - date.getTime()) / (friday().getTime() - date.getTime()) * 100));
+    }
+  }
+  
+  // zero padding
+  function zerofy (num) {
+    if (num < 10) num = "0" + num;
+    return num;
+  }
 
 </script>
 </head>
 <body>
   
-  <h1>Is it friday?</h1>
+  <h1>Is it Friday?</h1>
   
   <p></p>
   
+  <div id="progress"><div id="bar"></div></div>
+  
   <script>
   
-    setInterval(friday, 1000);
+    $("h1").html("Is it " + fridayName[fridayDay] + "?");
+  
+    setInterval(isItFriday, 1000);
 
     $("p").fadeIn(3000);
     
